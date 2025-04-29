@@ -17,7 +17,7 @@ const productGeneralSchema = new mongoose.Schema({
 
 
  const ProductGeneral = mongoose.model(
-  "productsgadget",
+  "product",
   productGeneralSchema
 );
 
