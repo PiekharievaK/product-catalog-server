@@ -21,7 +21,9 @@ const getProductsPerPage = async (req, res, next) => {
       sortBy: sort ? sort : "itemId",
     };
 
-const listByCategory = collection.filter(item => item.category === category)
+    const listByCategory = collection.filter(
+      (item) => item.category === category
+    );
 
     const sortList = (array) =>
       array.sort((a, b) => {
@@ -34,12 +36,13 @@ const listByCategory = collection.filter(item => item.category === category)
         }
       });
 
-    const start = params.count * +page;
+    const start = page > 1 ? params.count * +(page - 1) : 0;
     const finish = start + params.count;
-    const sortedItemsOnPage = sortList(listByCategory)
-      .slice(start, finish)
+    const sortedItemsOnPage = sortList(listByCategory).slice(start, finish);
 
-    res.status(200).json({collection: sortedItemsOnPage, count: listByCategory.length});
+    res
+      .status(200)
+      .json({ collection: sortedItemsOnPage, count: listByCategory.length });
   } catch (e) {
     res.status(204).json({ message: "No products" });
   }
