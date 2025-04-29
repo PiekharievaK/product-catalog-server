@@ -36,7 +36,6 @@ const getProductsPerPage = async (req, res, next) => {
     const finish = start + params.count;
     const sortedItemsOnPage = sortList(collection)
       .slice(start, finish)
-      .map((item) => item[params.sortBy]);
 
     res.status(200).json(sortedItemsOnPage);
   } catch (e) {
