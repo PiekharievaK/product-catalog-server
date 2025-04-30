@@ -16,7 +16,6 @@ const getAccess = async (req, res, next) => {
     const AccesData = await Accesorise.findOne({ id: itemName });
     const itemInGeneral = await ProductGeneral.findOne({ itemId: itemName });
     res.status(200).json({ product: AccesData, productId: itemInGeneral.id });
-    res.status(200).json(phoneData);
   } catch (e) {
     res.status(204).json({ message: "No products" });
   }
