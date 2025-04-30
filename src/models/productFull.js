@@ -26,9 +26,8 @@ const productFullSchema = new mongoose.Schema({
   cell: [String],
 });
 
-
 const Phone = mongoose.model("phone", productFullSchema);
 const Tablet = mongoose.model("tablet", productFullSchema);
 const Accesorise = mongoose.model("accessorie", productFullSchema);
 
-module.exports = {Phone, Tablet, Accesorise}
+module.exports = { Phone, Tablet, Accesorise };

@@ -1,4 +1,16 @@
 const { ProductGeneral } = require("../models/productGeneral");
+const baseCountofItems = 10;
+
+const generateRandomIdx = (itemsLength, count) => {
+  const indexes = new Set();
+
+  while (indexes.size < count) {
+    const randomIndex = Math.floor(Math.random() * itemsLength);
+    indexes.add(randomIndex);
+  }
+
+  return Array.from(indexes);
+};
 
 const getProductsCollection = async (req, res, next) => {
   try {
@@ -48,7 +60,78 @@ const getProductsPerPage = async (req, res, next) => {
   }
 };
 
+const getTopNew = async (req, res, next) => {
+  try {
+    const collection = await ProductGeneral.find({});
+    const newestList = collection
+      .sort((a, b) => b.year - a.year)
+      .slice(0, baseCountofItems);
+
+    res.status(200).json(newestList);
+  } catch (e) {
+    res.status(204).json({ message: "No products" });
+  }
+};
+
+const getHotPrice = async (req, res, next) => {
+  try {
+    const collection = await ProductGeneral.find({});
+
+    const hotPriceCollection = collection
+      .sort((a, b) => {
+        const firstDiference = a.fullPrice - a.price;
+        const secondDiference = b.fullPrice - b.price;
+        return firstDiference - secondDiference;
+      })
+      .slice(0, baseCountofItems);
+
+    res.status(200).json(hotPriceCollection);
+  } catch (e) {
+    res.status(204).json({ message: "No products" });
+  }
+};
+
+const getRandom = async (req, res, next) => {
+  try {
+    const collection = await ProductGeneral.find({});
+
+    const randomIdxArr = generateRandomIdx(collection.length, baseCountofItems);
+    const randomCollection = collection.filter((_, idx) =>
+      randomIdxArr.includes(idx)
+    );
+
+    res.status(200).json(randomCollection);
+  } catch (e) {
+    res.status(204).json({ message: "No products" });
+  }
+};
+
+const getHero = async (req, res, next) => {
+  try {
+    const collection = await ProductGeneral.find({});
+    const phones = collection.filter((item) => item.category === "phones");
+    const tablets = collection.filter((item) => item.category === "tablets");
+    const accessorise = collection.filter(
+      (item) => item.category === "accessories"
+    );
+
+    const randomCollection = [
+      phones[generateRandomIdx(phones.length, 1)],
+      tablets[generateRandomIdx(tablets.length, 1)],
+      accessorise[generateRandomIdx(accessorise.length, 1)],
+    ];
+
+    res.status(200).json(randomCollection);
+  } catch (e) {
+    res.status(204).json({ message: "No products" });
+  }
+};
+
 module.exports = {
   getProductsCollection,
   getProductsPerPage,
+  getTopNew,
+  getHotPrice,
+  getRandom,
+  getHero,
 };

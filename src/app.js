@@ -7,6 +7,7 @@ const productsRouter = require("./routes/products");
 const phonesRouter = require("./routes/phones");
 const tabletsRouter = require("./routes/tablets");
 const accesRouter = require("./routes/accesorise");
+const authRouter = require('./routes/auth')
 
 dotenv.config();
 
@@ -21,11 +22,11 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static("public"));
 
-
 app.get("/", (req, res) => {
   res.status(200).send("<h2>Homepage</h2>");
 });
 
+app.use("/auth", authRouter);
 app.use("/products", productsRouter);
 app.use("/phones", phonesRouter);
 app.use("/tablets", tabletsRouter);
