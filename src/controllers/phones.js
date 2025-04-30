@@ -24,5 +24,4 @@ const getPhone = async (req, res, next) => {
 module.exports = {
   getPhonesCollection,
   getPhone,
-  getPhonesPerPage,
 };
