@@ -8,8 +8,8 @@ const {
 } = require("../models/user");
 const { verifyValidate } = require("../models/user");
 
-// const appLink = "https://product-catalog-gamma-navy.vercel.app/";
-const appLink = "http://localhost:5173";
+const appLink = "https://product-catalog-gamma-navy.vercel.app/";
+// const appLink = "http://localhost:5173";
 
 const signup = async (req, res, next) => {
   const { error } = userSignUpValidate.validate(req.body);
@@ -104,6 +104,26 @@ const logout = async (req, res, next) => {
   }
 };
 
+const verify = async (req, res, next) => {
+  const { verificationToken } = req.params;
+  const user = await User.findOne({ verificationToken });
+  try {
+    if (!user) {
+      throw new Error(`Somthing wrong, verification link is wrong`);
+    }
+    await User.findByIdAndUpdate(user._id, {
+      verify: true,
+      verificationToken: null,
+    });
+
+    res.status(200).json({
+      message: `User ${user.email} is verify`,
+    });
+  } catch (e) {
+    res.status(400).json({ message: e.message });
+  }
+};
+
 const current = async (req, res, next) => {
   try {
     if (!req.user) {
@@ -146,4 +166,5 @@ module.exports = {
   logout,
   deleteUser,
   current,
+  verify,
 };
