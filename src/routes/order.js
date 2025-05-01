@@ -113,7 +113,7 @@ router.post("/user", auth, ctrl.order.createOrder);
  *     responses:
  *       200:
  *         description: Order found
- *       204:
+ *       400:
  *         description: No products found
  */
 router.get("/:orderId", ctrl.order.getOrder);

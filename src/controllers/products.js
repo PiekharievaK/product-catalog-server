@@ -17,7 +17,7 @@ const getProductsCollection = async (req, res, next) => {
     const collection = await ProductGeneral.find({});
     res.status(200).json(collection);
   } catch (e) {
-    res.status(204).json({ message: "No products" });
+    res.status(400).json({ message: "No products" });
   }
 };
 
@@ -56,7 +56,7 @@ const getProductsPerPage = async (req, res, next) => {
       .status(200)
       .json({ collection: sortedItemsOnPage, count: listByCategory.length });
   } catch (e) {
-    res.status(204).json({ message: "No products" });
+    res.status(400).json({ message: "No products" });
   }
 };
 
@@ -69,7 +69,7 @@ const getTopNew = async (req, res, next) => {
 
     res.status(200).json(newestList);
   } catch (e) {
-    res.status(204).json({ message: "No products" });
+    res.status(400).json({ message: "No products" });
   }
 };
 
@@ -87,7 +87,7 @@ const getHotPrice = async (req, res, next) => {
 
     res.status(200).json(hotPriceCollection);
   } catch (e) {
-    res.status(204).json({ message: "No products" });
+    res.status(400).json({ message: "No products" });
   }
 };
 
@@ -102,7 +102,7 @@ const getRandom = async (req, res, next) => {
 
     res.status(200).json(randomCollection);
   } catch (e) {
-    res.status(204).json({ message: "No products" });
+    res.status(400).json({ message: "No products" });
   }
 };
 
@@ -135,7 +135,7 @@ const getHero = async (req, res, next) => {
 
     res.status(200).json(randomCollection);
   } catch (e) {
-    res.status(204).json({ message: "No products" });
+    res.status(400).json({ message: "No products" });
   }
 };
 

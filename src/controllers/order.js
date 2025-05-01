@@ -6,7 +6,7 @@ const getOrder = async (req, res, next) => {
     const order = await Order.find({ orderId: orderId });
     res.status(200).json(order);
   } catch (e) {
-    res.status(204).json({ message: "No products" });
+    res.status(400).json({ message: "No products" });
   }
 };
 

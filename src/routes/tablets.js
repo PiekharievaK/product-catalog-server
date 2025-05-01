@@ -26,7 +26,7 @@ const router = express.Router();
  *               type: array
  *               items:
  *                 $ref: '#/components/schemas/Tablet'
- *       204:
+ *       400:
  *         description: No products found
  */
 router.get("/", ctrl.tablets.getTabletsCollection);
@@ -57,7 +57,7 @@ router.get("/", ctrl.tablets.getTabletsCollection);
  *                   $ref: '#/components/schemas/Tablet'
  *                 productId:
  *                   type: string
- *       204:
+ *       400:
  *         description: No products found
  *       404:
  *         description: Tablet not found

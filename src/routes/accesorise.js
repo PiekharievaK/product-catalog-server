@@ -26,7 +26,7 @@ const router = express.Router();
  *               type: array
  *               items:
  *                 $ref: '#/components/schemas/Accessory'
- *       204:
+ *       400:
  *         description: No products found
  */
 router.get("/", ctrl.acessorise.getAccesCollection);
@@ -57,7 +57,7 @@ router.get("/", ctrl.acessorise.getAccesCollection);
  *                   $ref: '#/components/schemas/Accessory'
  *                 productId:
  *                   type: string
- *       204:
+ *       400:
  *         description: No products found
  *       404:
  *         description: Accessory not found

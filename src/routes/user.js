@@ -22,7 +22,7 @@ const router = express.Router();
  *     responses:
  *       200:
  *         description: Returns favourites and cart
- *       204:
+ *       404:
  *         description: No products
  */
 router.get("/collection", auth, ctrl.user.getCollection);
@@ -63,7 +63,7 @@ router.get("/favourites", auth, ctrl.user.getFavourites);
  *         description: Successfully added
  *       409:
  *         description: Already in favourites
- *       500:
+ *       400:
  *         description: Unsuccessful adding
  *   delete:
  *     summary: Remove item from favourites
@@ -82,7 +82,7 @@ router.get("/favourites", auth, ctrl.user.getFavourites);
  *         description: Successfully removed
  *       409:
  *         description: Not in favourites
- *       500:
+ *       400:
  *         description: Unsuccessful deletion
  */
 router.post("/favourites/:itemId", auth, ctrl.user.addToFavourites);
@@ -99,7 +99,7 @@ router.delete("/favourites/:itemId", auth, ctrl.user.deleteFromFavourites);
  *     responses:
  *       200:
  *         description: Cart contents
- *       204:
+ *       400:
  *         description: No products
  *   post:
  *     summary: Add or update item in cart
@@ -125,7 +125,7 @@ router.delete("/favourites/:itemId", auth, ctrl.user.deleteFromFavourites);
  *         description: Item added or count updated
  *       409:
  *         description: Already in cart
- *       500:
+ *       400:
  *         description: Unsuccessful adding
  *   delete:
  *     summary: Remove item from cart
@@ -148,7 +148,7 @@ router.delete("/favourites/:itemId", auth, ctrl.user.deleteFromFavourites);
  *         description: Successfully removed
  *       409:
  *         description: Not in cart
- *       500:
+ *       400:
  *         description: Unsuccessful deletion
  */
 router.get("/card", auth, ctrl.user.getCard);

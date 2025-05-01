@@ -6,19 +6,18 @@ const getTabletsCollection = async (req, res, next) => {
     const collection = await Tablet.find({});
     res.status(200).json(collection);
   } catch (e) {
-    res.status(204).json({ message: "No products" });
+    res.status(400).json({ message: "No products" });
   }
 };
 
 const getTablet = async (req, res, next) => {
   try {
     const { itemName } = req.params;
-    const phoneData = await Tablet.findOne({ id: itemName });
+    const tabletData = await Tablet.findOne({ id: itemName });
     const itemInGeneral = await ProductGeneral.findOne({ itemId: itemName });
-    res.status(200).json({ product: phoneData, productId: itemInGeneral.id });
-    res.status(200).json(phoneData);
+    res.status(200).json({ product: tabletData, productId: itemInGeneral.id });
   } catch (e) {
-    res.status(204).json({ message: "No products" });
+    res.status(400).json({ message: "No products" });
   }
 };
 

@@ -26,7 +26,7 @@ const router = express.Router();
  *               type: array
  *               items:
  *                 $ref: '#/components/schemas/Phone'
- *       204:
+ *       400:
  *         description: No products found
  */
 router.get("/", ctrl.phones.getPhonesCollection);
@@ -57,7 +57,7 @@ router.get("/", ctrl.phones.getPhonesCollection);
  *                   $ref: '#/components/schemas/Phone'
  *                 productId:
  *                   type: string
- *       204:
+ *       400:
  *         description: No products found
  *       404:
  *         description: Phone not found

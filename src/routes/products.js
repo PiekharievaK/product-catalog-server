@@ -19,7 +19,7 @@ const router = express.Router();
  *               type: array
  *               items:
  *                 $ref: '#/components/schemas/Product'
- *       204:
+ *       400:
  *         description: No products found
  *         content:
  *           application/json:
@@ -48,7 +48,7 @@ router.get("/newest", ctrl.products.getTopNew);
  *               type: array
  *               items:
  *                 $ref: '#/components/schemas/Product'
- *       204:
+ *       400:
  *         description: No products found
  *         content:
  *           application/json:
@@ -77,7 +77,7 @@ router.get("/sales", ctrl.products.getHotPrice);
  *               type: array
  *               items:
  *                 $ref: '#/components/schemas/Product'
- *       204:
+ *       400:
  *         description: No products found
  *         content:
  *           application/json:
@@ -106,7 +106,7 @@ router.get("/random", ctrl.products.getRandom);
  *               type: array
  *               items:
  *                 $ref: '#/components/schemas/Product'
- *       204:
+ *       400:
  *         description: No products found
  *         content:
  *           application/json:
@@ -135,7 +135,7 @@ router.get("/hero", ctrl.products.getHero);
  *               type: array
  *               items:
  *                 $ref: '#/components/schemas/Product'
- *       204:
+ *       400:
  *         description: No products found
  *         content:
  *           application/json:
@@ -196,7 +196,7 @@ router.get("/", ctrl.products.getProductsCollection);
  *                 count:
  *                   type: integer
  *                   description: Total number of products matching the query
- *       204:
+ *       400:
  *         description: No products found for the specified page
  *         content:
  *           application/json:
