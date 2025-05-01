@@ -116,9 +116,21 @@ const getHero = async (req, res, next) => {
     );
 
     const randomCollection = [
-      phones[generateRandomIdx(phones.length, 1)],
-      tablets[generateRandomIdx(tablets.length, 1)],
-      accessorise[generateRandomIdx(accessorise.length, 1)],
+      {
+        category: "phones",
+        length: phones.length,
+        random: phones[generateRandomIdx(phones.length, 1)],
+      },
+      {
+        category: "tablets",
+        length: tablets.length,
+        random: tablets[generateRandomIdx(tablets.length, 1)],
+      },
+      {
+        category: "accessorise",
+        length: accessorise.length,
+        random: accessorise[generateRandomIdx(accessorise.length, 1)],
+      },
     ];
 
     res.status(200).json(randomCollection);

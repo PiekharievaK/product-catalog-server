@@ -10,6 +10,8 @@ const phonesRouter = require("./routes/phones");
 const tabletsRouter = require("./routes/tablets");
 const accesRouter = require("./routes/accesorise");
 const authRouter = require('./routes/auth');
+const userRouter = require('./routes/user');
+const orderRouter = require('./routes/order')
 
 dotenv.config();
 
@@ -34,6 +36,8 @@ app.use("/products", productsRouter);
 app.use("/phones", phonesRouter);
 app.use("/tablets", tabletsRouter);
 app.use("/accessories", accesRouter);
+app.use("/user", userRouter);
+app.use("/order", orderRouter);
 
 app.use((req, res) => {
   res.status(404).json({ message: "Not found 404" });

@@ -55,7 +55,6 @@ const signup = async (req, res, next) => {
 };
 
 const login = async (req, res, next) => {
-  console.log(process.env.SECRET_KEY);
   const { error } = userLogInValidate.validate(req.body);
 
   try {
@@ -65,7 +64,6 @@ const login = async (req, res, next) => {
 
     const { email, password } = req.body;
     const user = await User.findOne({ email });
-    // console.log(user);
     if (!user || !bcrypt.compareSync(password, user.password)) {
       throw new Error("Email or password is wrong");
     }
@@ -94,7 +92,6 @@ const login = async (req, res, next) => {
 
 const logout = async (req, res, next) => {
   const { authorization = "" } = req.headers;
-  console.log(authorization);
   try {
     await User.findByIdAndUpdate(req.user._id, { token: null });
 

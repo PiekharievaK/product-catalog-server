@@ -9,16 +9,12 @@ const auth = async (req, res, next) => {
       throw new Error("Unauthorize");
     }
     const { id } = jwt.verify(token, process.env.SECRET_KEY);
-    console.log(id);
     const user = await User.findById(id);
-    // console.log(user)
-    console.log(!!user, user.token, token, user.token !== token);
     if (!user || !user.token || user.token !== token) {
       console.log("Token mismatch!");
       throw new Error("Not authorized");
     }
     req.user = user;
-    console.log(user);
     next();
   } catch (error) {
     if (

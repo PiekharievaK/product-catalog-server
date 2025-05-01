@@ -3,6 +3,8 @@ const phones = require("./phones");
 const tablets = require("./tablets");
 const acessorise = require("./accessories");
 const auth = require("./auth");
+const user = require("./user");
+const order = require("./order");
 
 module.exports = {
   products,
@@ -10,4 +12,6 @@ module.exports = {
   tablets,
   acessorise,
   auth,
+  user,
+  order,
 };

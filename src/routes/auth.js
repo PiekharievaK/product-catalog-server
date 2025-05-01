@@ -126,7 +126,6 @@ router.delete("/delete", auth, ctrl.auth.deleteUser);
 
 module.exports = router;
 
-
 router.post("/signup", ctrl.auth.signup);
 router.get("/verify/:verificationToken", ctrl.auth.verify);
 router.post("/login", ctrl.auth.login);
