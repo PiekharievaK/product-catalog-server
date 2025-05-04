@@ -105,6 +105,10 @@ router.get("/logout", auth, ctrl.auth.logout);
  */
 router.delete("/delete", auth, ctrl.auth.deleteUser);
 
+
+router.post("/google", auth, ctrl.auth.authWithGoogle);
+
+
 router.post(
   "/firebase-login",
   auth,

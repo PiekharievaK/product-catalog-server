@@ -1,7 +1,7 @@
 const { User } = require("../models/user");
 
 const signup = async (req, res) => {
-  console.log(req)
+  console.log(req);
   const { uid, email, name, picture } = req.user;
 
   if (!uid || !email) {
@@ -18,8 +18,6 @@ const signup = async (req, res) => {
         login: name || email,
         email,
         firebase: true,
-        firebaseUid: uid,
-        avatarURL: picture || "https://i.ibb.co/hXnhcZW/profilepic11.png",
       });
     }
 
@@ -37,13 +35,14 @@ const login = async (req, res) => {
   console.log("Login called");
 
   try {
-    res.status(200).json({ user: {email: req.user.email, login: req.user.email } });
+    res
+      .status(200)
+      .json({ user: { email: req.user.email, login: req.user.email } });
   } catch (e) {
     console.error("Login error:", e);
     res.status(400).json({ message: "Login error" });
   }
 };
-
 
 const logout = async (req, res) => {
   console.log("Logout called");
@@ -90,10 +89,37 @@ const deleteUser = async (req, res) => {
   }
 };
 
+const authWithGoogle = async (req, res) => {
+  console.log("Login called");
+  const { uid, displayName, email,  } = req.user;
+
+  try {
+    if (uid) {
+      const user = await User.create({
+        login: displayName || email,
+        email,
+        firebase: true,
+        firebaseUid: uid,
+      });
+      res
+      .status(200)
+      .json({ user: { email: user.email, login: user.email } });
+    }
+
+    res
+      .status(200)
+      .json({ user: { email: req.user.email, login: req.user.email } });
+  } catch (e) {
+    console.error("google error:", e);
+    res.status(400).json({ message: "google error" });
+  }
+};
+
 module.exports = {
   login,
   logout,
   current,
   deleteUser,
   signup,
+  authWithGoogle,
 };
