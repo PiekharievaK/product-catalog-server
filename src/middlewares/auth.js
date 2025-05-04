@@ -1,29 +1,22 @@
 const { User } = require("../models/user");
-const jwt = require("jsonwebtoken");
+const admin = require("../middlewares/firebaseAdmin");
 
 const auth = async (req, res, next) => {
   const { authorization = "" } = req.headers;
   const [bearer, token] = authorization.split(" ");
+  if (bearer !== "Bearer" || !token) {
+    return res.status(401).json({ message: "Unauthorized: No token" });
+  }
+
   try {
-    if (bearer !== "Bearer") {
-      throw new Error("Unauthorize");
-    }
-    const { id } = jwt.verify(token, process.env.SECRET_KEY);
-    const user = await User.findById(id);
-    if (!user || !user.token || user.token !== token) {
-      console.log("Token mismatch!");
-      throw new Error("Not authorized");
-    }
-    req.user = user;
-    next();
+    const decodedFirebase = await admin.auth().verifyIdToken(token);
+    console.log(decodedFirebase);
+    let user = await User.findOne({ firebaseUid: decodedFirebase.uid });
+    req.user = user ? user : decodedFirebase;
+    return next();
   } catch (error) {
-    if (
-      error.message === "Invalid signature" ||
-      error.message === "jwt malformed"
-    ) {
-      error.status = 401;
-    }
-    next(error);
+    console.error("Firebase auth error:", error.message);
+    return res.status(401).json({ message: "Unauthorized: Invalid token" });
   }
 };
 

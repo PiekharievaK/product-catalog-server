@@ -1,4 +1,5 @@
 const { Order } = require("../models/order");
+const { ProductGeneral } = require("../models/productGeneral");
 
 const getOrder = async (req, res, next) => {
   try {
@@ -12,7 +13,6 @@ const getOrder = async (req, res, next) => {
 
 const createOrder = async (req, res, next) => {
   const { owner, order } = req.body;
-  console.log(req.user, owner, order);
   try {
     const user = req.user
       ? {
@@ -20,19 +20,50 @@ const createOrder = async (req, res, next) => {
           email: req.user.email,
           name: req.user.login,
           phone: req.user.phone,
+          adress: req.user.adress,
         }
       : owner;
 
-    console.log(user);
+    const products = await ProductGeneral.find();
+
+    let totalPrice = 0;
+
+    const updatedOrder = order.map((item) => {
+      const product = products.find(prod => prod.itemId === item.id);
+
+      if (!product) {
+        return null;
+      }
+
+      const price = parseFloat(product.price);
+      const quantity = parseInt(item.count, 10);
+
+      if (isNaN(price) || isNaN(quantity)) {
+        return null;
+      }
+
+      const itemPrice = price * quantity;
+      totalPrice += itemPrice;
+
+      return { ...item, price: itemPrice };
+    });
+
+    const validOrder = updatedOrder.filter(item => item !== null);
+
+    if (validOrder.length === 0) {
+      throw new Error("No valid products found in the order.");
+    }
+
     const newOrder = await Order.create({
       orderId: generateOrderNumber(),
       owner: user,
-      order: order,
+      order: validOrder,
+      price: totalPrice,
     });
 
     res.status(200).json(newOrder);
   } catch (e) {
-    res.status(400).json({ message: "No products" });
+    res.status(400).json({ message: e.message || "No products or error in calculation" });
   }
 };
 
