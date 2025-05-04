@@ -15,7 +15,7 @@ const generateRandomIdx = (itemsLength, count) => {
 const getProductsCollection = async (req, res, next) => {
   try {
     const collection = await ProductGeneral.find({});
-    res.status(200).json(collection);
+    res.status(200).json({ collection: collection, count: collection.length });
   } catch (e) {
     res.status(400).json({ message: "No products" });
   }
