@@ -24,7 +24,7 @@ const getProductsCollection = async (req, res, next) => {
 const getProductsPerPage = async (req, res, next) => {
   try {
     const { page } = req.params;
-    const { sort, perPage, category } = req.query;
+    const { sort, perPage, category, search } = req.query;
 
     const collection = await ProductGeneral.find({});
 
@@ -36,6 +36,12 @@ const getProductsPerPage = async (req, res, next) => {
     const listByCategory = collection.filter(
       (item) => item.category === category
     );
+
+    const filteredByQuery = search
+      ? listByCategory.filter((item) =>
+          item.name.toLowerCase().includes(search.toLowerCase())
+        )
+      : listByCategory;
 
     const sortList = (array) =>
       array.sort((a, b) => {
@@ -50,11 +56,11 @@ const getProductsPerPage = async (req, res, next) => {
 
     const start = page > 1 ? params.count * +(page - 1) : 0;
     const finish = start + params.count;
-    const sortedItemsOnPage = sortList(listByCategory).slice(start, finish);
+    const sortedItemsOnPage = sortList(filteredByQuery).slice(start, finish);
 
     res
       .status(200)
-      .json({ collection: sortedItemsOnPage, count: listByCategory.length });
+      .json({ collection: sortedItemsOnPage, count: filteredByQuery.length });
   } catch (e) {
     res.status(400).json({ message: "No products" });
   }

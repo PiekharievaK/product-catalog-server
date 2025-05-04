@@ -53,7 +53,6 @@ const createOrder = async (req, res, next) => {
     if (validOrder.length === 0) {
       throw new Error("No valid products found in the order.");
     }
-console.log(totalPrice)
     const newOrder = await Order.create({
       orderId: generateOrderNumber(),
       owner: user,
