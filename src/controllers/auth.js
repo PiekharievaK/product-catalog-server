@@ -1,167 +1,99 @@
-const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
-const { v4 } = require("uuid");
-const {
-  User,
-  userSignUpValidate,
-  userLogInValidate,
-} = require("../models/user");
-const { verifyValidate } = require("../models/user");
+const { User } = require("../models/user");
 
-const appLink = "https://product-catalog-gamma-navy.vercel.app/";
-// const appLink = "http://localhost:5173";
+const signup = async (req, res) => {
+  console.log(req)
+  const { uid, email, name, picture } = req.user;
 
-const signup = async (req, res, next) => {
-  const { error } = userSignUpValidate.validate(req.body);
-
-  try {
-    if (error) {
-      throw new Error(error.message);
-    }
-
-    const { login, email } = req.body;
-    const isUser = await User.findOne({ email });
-    if (isUser) {
-      throw new Error("Email in use");
-    }
-    const hashPassword = bcrypt.hashSync(
-      req.body.password,
-      bcrypt.genSaltSync(10)
-    );
-    const password = hashPassword;
-
-    const avatarURL = `https://i.ibb.co/S351TY1/profilepic9.png`;
-    const verificationToken = v4();
-    const user = await User.create({
-      email,
-      password,
-      login,
-      avatarURL,
-      verificationToken,
-      favourites: [],
-      card: [],
-    });
-
-    res.status(201).json({
-      user: {
-        email,
-        avatarURL: user.avatarURL,
-        linkToVerify: `${appLink}/Verification#${verificationToken}`,
-      },
-    });
-  } catch (e) {
-    res.status(409).json({ message: e.message });
+  if (!uid || !email) {
+    console.warn("Missing uid or email from Firebase token");
+    return res.status(400).json({ message: "Invalid Firebase user data" });
   }
-};
-
-const login = async (req, res, next) => {
-  const { error } = userLogInValidate.validate(req.body);
 
   try {
-    if (error) {
-      console.log(error.message);
-    }
+    let user = await User.findOne({ firebaseUid: uid });
 
-    const { email, password } = req.body;
-    const user = await User.findOne({ email });
-    if (!user || !bcrypt.compareSync(password, user.password)) {
-      throw new Error("Email or password is wrong");
-    }
-
-    if (!user.verify) {
-      throw new Error(`Email is not verify`);
-    }
-
-    const token = jwt.sign({ id: user._id }, process.env.SECRET_KEY, {
-      expiresIn: "1h",
-    });
-    await User.findByIdAndUpdate(user._id, { token });
-
-    res.status(200).json({
-      token,
-      user: {
-        _id: user._id,
-        login: user.login,
-        email: user.email,
-      },
-    });
-  } catch (e) {
-    res.status(401).json({ message: e.message });
-  }
-};
-
-const logout = async (req, res, next) => {
-  const { authorization = "" } = req.headers;
-  try {
-    await User.findByIdAndUpdate(req.user._id, { token: null });
-
-    res.status(200).json();
-  } catch (e) {
-    res.status(400).json({ message: "Not found" });
-  }
-};
-
-const verify = async (req, res, next) => {
-  const { verificationToken } = req.params;
-  const user = await User.findOne({ verificationToken });
-  try {
     if (!user) {
-      throw new Error(`Somthing wrong, verification link is wrong`);
+      user = await User.create({
+        firebaseUid: uid,
+        login: name || email,
+        email,
+        firebase: true,
+        firebaseUid: uid,
+        avatarURL: picture || "https://i.ibb.co/hXnhcZW/profilepic11.png",
+      });
     }
-    await User.findByIdAndUpdate(user._id, {
-      verify: true,
-      verificationToken: null,
-    });
 
     res.status(200).json({
-      message: `User ${user.email} is verify`,
+      message: "Logged in via Firebase",
+      user,
     });
-  } catch (e) {
-    res.status(400).json({ message: e.message });
+  } catch (error) {
+    console.error("Firebase login error:", error);
+    res.status(500).json({ message: "Server error" });
   }
 };
 
-const current = async (req, res, next) => {
+const login = async (req, res) => {
+  console.log("Login called");
+
   try {
-    if (!req.user) {
-      res.status(401).json({ message: "Not authorized" });
-      return;
-    }
-    const { _id, login, email } = req.user;
-    const token = jwt.sign({ id: _id }, process.env.SECRET_KEY, {
-      expiresIn: "1h",
-    });
-    await User.findByIdAndUpdate(_id, { token });
-    res.status(200).json({
-      data: {
-        token,
-        user: {
-          _id: _id,
-          login,
-          email,
-        },
-      },
-    });
+    res.status(200).json({ user: {email: req.user.email, login: req.user.email } });
   } catch (e) {
-    console.log(e);
+    console.error("Login error:", e);
+    res.status(400).json({ message: "Login error" });
   }
 };
 
-const deleteUser = async (req, res, next) => {
-  try {
-    await User.findByIdAndDelete({ _id: req.user._id });
 
-    res.status(200).json();
+const logout = async (req, res) => {
+  console.log("Logout called");
+
+  try {
+    res.status(200).json({ message: "Logged out" });
   } catch (e) {
-    res.status(400).json({ message: "Not found" });
+    console.error("Logout error:", e);
+    res.status(400).json({ message: "Logout error" });
+  }
+};
+
+const current = async (req, res) => {
+  console.log("Current user request");
+
+  if (!req.user) {
+    console.warn("No user on request");
+    return res.status(401).json({ message: "Unauthorized" });
+  }
+
+  const { _id, login, email, avatarURL } = req.user;
+  console.log("Authenticated user:", req.user);
+
+  res.status(200).json({
+    user: {
+      _id,
+      login,
+      email,
+      avatarURL,
+    },
+  });
+};
+
+const deleteUser = async (req, res) => {
+  console.log(" Delete user request");
+
+  try {
+    await User.findByIdAndDelete(req.user._id);
+    console.log(" User deleted:", req.user._id);
+    res.status(200).json({ message: "User deleted" });
+  } catch (e) {
+    console.error("Delete  error:", e);
+    res.status(400).json({ message: "Delete error" });
   }
 };
 
 module.exports = {
-  signup,
   login,
   logout,
-  deleteUser,
   current,
-  verify,
+  deleteUser,
+  signup,
 };

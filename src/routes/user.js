@@ -154,5 +154,6 @@ router.delete("/favourites/:itemId", auth, ctrl.user.deleteFromFavourites);
 router.get("/card", auth, ctrl.user.getCard);
 router.post("/card", auth, ctrl.user.addToCard);
 router.delete("/card", auth, ctrl.user.deleteFromCard);
+router.delete("/card/clear", auth, ctrl.user.clearCard);
 
 module.exports = router;

@@ -3,13 +3,13 @@ const Joi = require("joi");
 
 const userSchema = Schema(
   {
-    login: {
+    firebaseUid: {
       type: String,
       required: [true, "Login is required"],
     },
-    password: {
+    login: {
       type: String,
-      required: [true, "Password is required"],
+      required: [true, "Login is required"],
     },
     email: {
       type: String,
@@ -22,37 +22,48 @@ const userSchema = Schema(
     },
     avatarURL: {
       type: String,
-      require: true,
+      required: true,
     },
     verify: {
       type: Boolean,
       default: false,
     },
-    verificationToken: {
-      type: String,
-      required: [true, "Verify token is required"],
-    },
-    temporaryCode: {
-      type: String,
-      default: null,
-    },
     favourites: {
       type: [String],
       default: [],
     },
-    card: {
+    cart: {
       type: [{ id: String, count: Number }],
       default: [],
+    },
+    contacts: {
+      phone: String,
+      fullName: String,
+      adress: {
+        city: String,
+        post: String,
+        office: Number,
+      },
     },
   },
   { timestamps: true }
 );
 
+
 const userSignUpValidate = Joi.object({
   login: Joi.string().required(),
   email: Joi.string().email().required(),
-  password: Joi.string().min(3).max(30).required(),
+  firebase: Joi.boolean().required(),
+  password: Joi.string()
+    .min(3)
+    .max(30)
+    .when("firebase", {
+      is: false,
+      then: Joi.required(),
+      otherwise: Joi.optional().allow("", null),
+    }),
 });
+
 const userLogInValidate = Joi.object({
   email: Joi.string().required(),
   password: Joi.string().min(3).max(30).required(),

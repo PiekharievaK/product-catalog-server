@@ -1,5 +1,6 @@
 const express = require("express");
 const ctrl = require("../controllers");
+const verifyFirebaseToken = require("../middlewares/verifyFirebaseToken");
 const { auth } = require("../middlewares/auth");
 
 const router = express.Router();
@@ -29,28 +30,7 @@ const router = express.Router();
  *       409:
  *         description: Email in use
  */
-router.post("/signup", ctrl.auth.signup);
-
-/**
- * @swagger
- * /auth/verify/{verificationToken}:
- *   get:
- *     summary: Verify user email
- *     tags: [Auth]
- *     parameters:
- *       - in: path
- *         name: verificationToken
- *         schema:
- *           type: string
- *         required: true
- *         description: The user's email verification token
- *     responses:
- *       200:
- *         description: Verification successful
- *       400:
- *         description: Verification failed
- */
-router.get("/verify/:verificationToken", ctrl.auth.verify);
+router.post("/signup", auth, ctrl.auth.signup);
 
 /**
  * @swagger
@@ -73,8 +53,9 @@ router.get("/verify/:verificationToken", ctrl.auth.verify);
  *               $ref: '#/components/schemas/AuthResponse'
  *       401:
  *         description: Email or password is wrong
- */
-router.post("/login", ctrl.auth.login);
+*/
+// router.post("/login", ctrl.auth.login);
+router.post("/login", auth, ctrl.auth.login);
 
 /**
  * @swagger
@@ -124,12 +105,16 @@ router.get("/logout", auth, ctrl.auth.logout);
  */
 router.delete("/delete", auth, ctrl.auth.deleteUser);
 
-module.exports = router;
+router.post(
+  "/firebase-login",
+  auth,
+  ctrl.auth.signup
+);
 
-router.post("/signup", ctrl.auth.signup);
-router.get("/verify/:verificationToken", ctrl.auth.verify);
-router.post("/login", ctrl.auth.login);
-router.get("/current", auth, ctrl.auth.current);
-router.get("/logout", auth, ctrl.auth.logout);
-router.delete("/delete", auth, ctrl.auth.deleteUser);
 module.exports = router;
+// router.post("/signup", ctrl.auth.signup);
+// router.get("/verify/:verificationToken", ctrl.auth.verify);
+// router.get("/current", auth, ctrl.auth.current);
+// router.get("/logout", auth, ctrl.auth.logout);
+// router.delete("/delete", auth, ctrl.auth.deleteUser);
+// module.exports = router;
