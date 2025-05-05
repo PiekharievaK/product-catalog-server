@@ -16,6 +16,7 @@ const orderSchema = new mongoose.Schema({
     adress: String,
   },
   price: Number,
+  date: String
 });
 
 const Order = mongoose.model("order", orderSchema);

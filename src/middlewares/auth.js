@@ -10,7 +10,6 @@ const auth = async (req, res, next) => {
 
   try {
     const decodedFirebase = await admin.auth().verifyIdToken(token);
-    console.log(decodedFirebase);
     let user = await User.findOne({ firebaseUid: decodedFirebase.uid });
     req.user = user ? user : decodedFirebase;
     return next();

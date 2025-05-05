@@ -118,4 +118,7 @@ router.post("/user", auth, ctrl.order.createOrder);
  */
 router.get("/:orderId", ctrl.order.getOrder);
 
+
+router.post("/contact", ctrl.order.contactForm);
+
 module.exports = router;

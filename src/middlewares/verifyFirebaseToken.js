@@ -11,7 +11,7 @@ const verifyFirebaseToken = async (req, res, next) => {
 
   try {
     const decodedToken = await admin.auth().verifyIdToken(token);
-    console.log("Firebase token verified:", decodedToken);
+    console.log("Firebase token verified:", !!decodedToken);
 
     req.user = {
       uid: decodedToken.uid,

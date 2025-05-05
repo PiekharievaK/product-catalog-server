@@ -48,7 +48,7 @@ const getProductsPerPage = async (req, res, next) => {
         const key = params.sortBy;
 
         if (!isNaN(+a[key])) {
-          return +a[key] - +b[key];
+          return sort === "year" ? +b[key] - +a[key] : +a[key] - +b[key];
         } else {
           return a[key].localeCompare(b[key]);
         }

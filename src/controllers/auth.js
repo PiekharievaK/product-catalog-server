@@ -1,8 +1,7 @@
 const { User } = require("../models/user");
 
 const signup = async (req, res) => {
-  console.log(req);
-  const { uid, email, name, picture } = req.user;
+  const { uid, email, name } = req.user;
 
   if (!uid || !email) {
     console.warn("Missing uid or email from Firebase token");
@@ -33,6 +32,10 @@ const signup = async (req, res) => {
 
 const login = async (req, res) => {
   console.log("Login called");
+  const { uid } = req.user;
+  if (uid) {
+    throw new Error({ message: "Not in our database" });
+  }
 
   try {
     res
@@ -91,7 +94,7 @@ const deleteUser = async (req, res) => {
 
 const authWithGoogle = async (req, res) => {
   console.log("Login called");
-  const { uid, displayName, email,  } = req.user;
+  const { uid, displayName, email } = req.user;
 
   try {
     if (uid) {
@@ -101,9 +104,8 @@ const authWithGoogle = async (req, res) => {
         firebase: true,
         firebaseUid: uid,
       });
-      res
-      .status(200)
-      .json({ user: { email: user.email, login: user.email } });
+      res.status(200).json({ user: { email: user.email, login: user.email } });
+      return;
     }
 
     res
