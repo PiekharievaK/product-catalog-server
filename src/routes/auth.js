@@ -1,6 +1,5 @@
 const express = require("express");
 const ctrl = require("../controllers");
-const verifyFirebaseToken = require("../middlewares/verifyFirebaseToken");
 const { auth } = require("../middlewares/auth");
 
 const router = express.Router();
@@ -9,26 +8,26 @@ const router = express.Router();
  * @swagger
  * tags:
  *   name: Auth
- *   description: User authentication
+ *   description: Firebase-based user authentication
  */
 
 /**
  * @swagger
  * /auth/signup:
  *   post:
- *     summary: Register a new user
+ *     summary: Sign up or login a user via Firebase token
  *     tags: [Auth]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             $ref: '#/components/schemas/UserSignup'
+ *     security:
+ *       - bearerAuth: []
  *     responses:
- *       201:
- *         description: User created
- *       409:
- *         description: Email in use
+ *       200:
+ *         description: Successfully signed up or logged in
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/AuthResponse'
+ *       400:
+ *         description: Invalid Firebase user data
  */
 router.post("/signup", auth, ctrl.auth.signup);
 
@@ -36,14 +35,10 @@ router.post("/signup", auth, ctrl.auth.signup);
  * @swagger
  * /auth/login:
  *   post:
- *     summary: Login a user
+ *     summary: Login user with Firebase token
  *     tags: [Auth]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             $ref: '#/components/schemas/UserLogin'
+ *     security:
+ *       - bearerAuth: []
  *     responses:
  *       200:
  *         description: Login successful
@@ -51,25 +46,28 @@ router.post("/signup", auth, ctrl.auth.signup);
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/AuthResponse'
- *       401:
- *         description: Email or password is wrong
-*/
-// router.post("/login", ctrl.auth.login);
+ *       400:
+ *         description: Login error
+ */
 router.post("/login", auth, ctrl.auth.login);
 
 /**
  * @swagger
  * /auth/current:
  *   get:
- *     summary: Get current logged in user
+ *     summary: Get current authenticated user
  *     tags: [Auth]
  *     security:
  *       - bearerAuth: []
  *     responses:
  *       200:
  *         description: Current user info
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/AuthResponse'
  *       401:
- *         description: Not authorized
+ *         description: Unauthorized
  */
 router.get("/current", auth, ctrl.auth.current);
 
@@ -85,7 +83,7 @@ router.get("/current", auth, ctrl.auth.current);
  *       200:
  *         description: Successfully logged out
  *       400:
- *         description: User not found
+ *         description: Logout error
  */
 router.get("/logout", auth, ctrl.auth.logout);
 
@@ -93,7 +91,7 @@ router.get("/logout", auth, ctrl.auth.logout);
  * @swagger
  * /auth/delete:
  *   delete:
- *     summary: Delete current user
+ *     summary: Delete current authenticated user
  *     tags: [Auth]
  *     security:
  *       - bearerAuth: []
@@ -101,24 +99,24 @@ router.get("/logout", auth, ctrl.auth.logout);
  *       200:
  *         description: User deleted
  *       400:
- *         description: Deletion failed
+ *         description: Delete error
  */
 router.delete("/delete", auth, ctrl.auth.deleteUser);
 
-
+/**
+ * @swagger
+ * /auth/google:
+ *   post:
+ *     summary: Login or sign up with Google via Firebase token
+ *     tags: [Auth]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Login successful via Google
+ *       400:
+ *         description: Google auth error
+ */
 router.post("/google", auth, ctrl.auth.authWithGoogle);
 
-
-router.post(
-  "/firebase-login",
-  auth,
-  ctrl.auth.signup
-);
-
 module.exports = router;
-// router.post("/signup", ctrl.auth.signup);
-// router.get("/verify/:verificationToken", ctrl.auth.verify);
-// router.get("/current", auth, ctrl.auth.current);
-// router.get("/logout", auth, ctrl.auth.logout);
-// router.delete("/delete", auth, ctrl.auth.deleteUser);
-// module.exports = router;

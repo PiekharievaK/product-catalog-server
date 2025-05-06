@@ -6,16 +6,9 @@ const router = express.Router();
 
 /**
  * @swagger
- * tags:
- *   name: Orders
- *   description: Operations related to orders
- */
-
-/**
- * @swagger
- * /order:
+ * /orders:
  *   post:
- *     summary: Create a new order (unauthenticated)
+ *     summary: Create a new order
  *     tags: [Orders]
  *     requestBody:
  *       required: true
@@ -23,48 +16,30 @@ const router = express.Router();
  *         application/json:
  *           schema:
  *             type: object
- *             required:
- *               - owner
- *               - order
  *             properties:
  *               owner:
- *                 type: object
- *                 required:
- *                   - name
- *                   - phone
- *                   - email
- *                 properties:
- *                   name:
- *                     type: string
- *                   phone:
- *                     type: string
- *                   email:
- *                     type: string
+ *                 $ref: '#/components/schemas/Owner'
  *               order:
  *                 type: array
  *                 items:
- *                   type: object
- *                   required:
- *                     - id
- *                     - count
- *                   properties:
- *                     id:
- *                       type: string
- *                     count:
- *                       type: integer
+ *                   $ref: '#/components/schemas/OrderItem'
  *     responses:
  *       200:
- *         description: Order successfully created
+ *         description: Order created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Order'
  *       400:
- *         description: No products or validation error
+ *         description: Bad request or validation error
  */
 router.post("/", ctrl.order.createOrder);
 
 /**
  * @swagger
- * /order/user:
+ * /orders/user:
  *   post:
- *     summary: Create a new order (authenticated)
+ *     summary: Create a new order for authenticated user
  *     tags: [Orders]
  *     security:
  *       - bearerAuth: []
@@ -74,51 +49,92 @@ router.post("/", ctrl.order.createOrder);
  *         application/json:
  *           schema:
  *             type: object
- *             required:
- *               - order
  *             properties:
  *               order:
  *                 type: array
  *                 items:
- *                   type: object
- *                   required:
- *                     - id
- *                     - count
- *                   properties:
- *                     id:
- *                       type: string
- *                     count:
- *                       type: integer
+ *                   $ref: '#/components/schemas/OrderItem'
  *     responses:
  *       200:
- *         description: Order successfully created
+ *         description: Order created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Order'
  *       400:
- *         description: No products or validation error
+ *         description: Bad request or validation error
+ *       401:
+ *         description: Unauthorized, no valid token
  */
 router.post("/user", auth, ctrl.order.createOrder);
 
 /**
  * @swagger
- * /order/{orderId}:
+ * /orders/{orderId}:
  *   get:
- *     summary: Get order by ID
+ *     summary: Get a specific order by its orderId
  *     tags: [Orders]
  *     parameters:
  *       - in: path
  *         name: orderId
  *         required: true
+ *         description: The ID of the order to retrieve
  *         schema:
  *           type: string
- *         description: The ID of the order
  *     responses:
  *       200:
- *         description: Order found
+ *         description: Order details
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Order'
  *       400:
- *         description: No products found
+ *         description: Order not found or invalid
  */
 router.get("/:orderId", ctrl.order.getOrder);
 
-
+/**
+ * @swagger
+ * /orders/contact:
+ *   post:
+ *     summary: Contact form for orders
+ *     tags: [Orders]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 example: "John Doe"
+ *               email:
+ *                 type: string
+ *                 example: "johndoe@example.com"
+ *               phone:
+ *                 type: string
+ *                 example: "+380971112233"
+ *               message:
+ *                 type: string
+ *                 example: "I have an inquiry regarding my order."
+ *     responses:
+ *       200:
+ *         description: Contact request submitted successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 requestId:
+ *                   type: string
+ *                   example: "CR-ABC1234"
+ *                 message:
+ *                   type: string
+ *                   example: "Your request has been submitted"
+ *       400:
+ *         description: Bad request or validation error
+ */
 router.post("/contact", ctrl.order.contactForm);
 
 module.exports = router;

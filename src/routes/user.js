@@ -6,104 +6,134 @@ const router = express.Router();
 
 /**
  * @swagger
- * tags:
- *   name: User
- *   description: Operations related to user favourites and cart
- */
-
-/**
- * @swagger
- * /user/collection:
+ * /users/collection:
  *   get:
- *     summary: Get user's favourites and cart
- *     tags: [User]
+ *     summary: Get the user's collection (favourites and cart)
+ *     tags: [Users]
+ *     description: Retrieves the user's favourites and shopping cart information.
  *     security:
  *       - bearerAuth: []
  *     responses:
  *       200:
- *         description: Returns favourites and cart
+ *         description: User's collection retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/UserCollectionResponse'
  *       404:
- *         description: No products
+ *         description: No products found
  */
 router.get("/collection", auth, ctrl.user.getCollection);
 
 /**
  * @swagger
- * /user/favourites:
+ * /users/favourites:
  *   get:
- *     summary: Get user's favourites
- *     tags: [User]
+ *     summary: Get the user's favourites
+ *     tags: [Users]
+ *     description: Retrieves the list of items in the user's favourites.
  *     security:
  *       - bearerAuth: []
  *     responses:
  *       200:
- *         description: List of favourite items
+ *         description: User's favourites retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/FavouritesResponse'
  *       404:
- *         description: No products
+ *         description: No favourites found
  */
 router.get("/favourites", auth, ctrl.user.getFavourites);
 
 /**
  * @swagger
- * /user/favourites/{itemId}:
+ * /users/favourites/{itemId}:
  *   post:
- *     summary: Add item to favourites
- *     tags: [User]
+ *     summary: Add an item to the user's favourites
+ *     tags: [Users]
+ *     description: Adds a product to the user's favourites list. Returns an error if the item is already in the favourites.
  *     security:
  *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: itemId
  *         required: true
+ *         description: The ID of the item to add to favourites
  *         schema:
  *           type: string
- *         description: ID of the item to add
  *     responses:
  *       200:
- *         description: Successfully added
+ *         description: Item added to favourites successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ActionResponse'
  *       409:
- *         description: Already in favourites
+ *         description: Item already in favourites
  *       400:
  *         description: Unsuccessful adding
+ */
+router.post("/favourites/:itemId", auth, ctrl.user.addToFavourites);
+
+/**
+ * @swagger
+ * /users/favourites/{itemId}:
  *   delete:
- *     summary: Remove item from favourites
- *     tags: [User]
+ *     summary: Remove an item from the user's favourites
+ *     tags: [Users]
+ *     description: Removes a product from the user's favourites list. Returns an error if the item is not in the favourites.
  *     security:
  *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: itemId
  *         required: true
+ *         description: The ID of the item to remove from favourites
  *         schema:
  *           type: string
- *         description: ID of the item to remove
  *     responses:
  *       200:
- *         description: Successfully removed
+ *         description: Item removed from favourites successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ActionResponse'
  *       409:
- *         description: Not in favourites
+ *         description: Item not found in favourites
  *       400:
- *         description: Unsuccessful deletion
+ *         description: Unsuccessful deleting
  */
-router.post("/favourites/:itemId", auth, ctrl.user.addToFavourites);
 router.delete("/favourites/:itemId", auth, ctrl.user.deleteFromFavourites);
 
 /**
  * @swagger
- * /user/card:
+ * /users/card:
  *   get:
- *     summary: Get items in cart
- *     tags: [User]
+ *     summary: Get the user's shopping cart
+ *     tags: [Users]
+ *     description: Retrieves the user's shopping cart containing items and their quantities.
  *     security:
  *       - bearerAuth: []
  *     responses:
  *       200:
- *         description: Cart contents
- *       400:
- *         description: No products
+ *         description: User's cart retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/CartResponse'
+ *       404:
+ *         description: No items found in cart
+ */
+router.get("/card", auth, ctrl.user.getCard);
+
+/**
+ * @swagger
+ * /users/card:
  *   post:
- *     summary: Add or update item in cart
- *     tags: [User]
+ *     summary: Add an item to the user's shopping cart
+ *     tags: [Users]
+ *     description: Adds a product to the user's shopping cart. If the item is already in the cart, the quantity is updated.
  *     security:
  *       - bearerAuth: []
  *     requestBody:
@@ -112,24 +142,32 @@ router.delete("/favourites/:itemId", auth, ctrl.user.deleteFromFavourites);
  *         application/json:
  *           schema:
  *             type: object
- *             required:
- *               - itemId
- *               - count
  *             properties:
  *               itemId:
  *                 type: string
  *               count:
- *                 type: integer
+ *                 type: number
  *     responses:
  *       200:
- *         description: Item added or count updated
+ *         description: Item added to cart successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ActionResponse'
  *       409:
- *         description: Already in cart
+ *         description: Item already in the cart
  *       400:
  *         description: Unsuccessful adding
+ */
+router.post("/card", auth, ctrl.user.addToCard);
+
+/**
+ * @swagger
+ * /users/card:
  *   delete:
- *     summary: Remove item from cart
- *     tags: [User]
+ *     summary: Remove an item from the user's shopping cart
+ *     tags: [Users]
+ *     description: Removes a product from the user's shopping cart. Returns an error if the item is not in the cart.
  *     security:
  *       - bearerAuth: []
  *     requestBody:
@@ -138,22 +176,42 @@ router.delete("/favourites/:itemId", auth, ctrl.user.deleteFromFavourites);
  *         application/json:
  *           schema:
  *             type: object
- *             required:
- *               - itemId
  *             properties:
  *               itemId:
  *                 type: string
  *     responses:
  *       200:
- *         description: Successfully removed
+ *         description: Item removed from cart successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ActionResponse'
  *       409:
- *         description: Not in cart
+ *         description: Item not found in cart
  *       400:
- *         description: Unsuccessful deletion
+ *         description: Unsuccessful deleting
  */
-router.get("/card", auth, ctrl.user.getCard);
-router.post("/card", auth, ctrl.user.addToCard);
 router.delete("/card", auth, ctrl.user.deleteFromCard);
+
+/**
+ * @swagger
+ * /users/card/clear:
+ *   delete:
+ *     summary: Clear all items from the user's shopping cart
+ *     tags: [Users]
+ *     description: Removes all items from the user's shopping cart.
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: All items removed from cart successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ActionResponse'
+ *       400:
+ *         description: Unsuccessful clearing
+ */
 router.delete("/card/clear", auth, ctrl.user.clearCard);
 
 module.exports = router;
